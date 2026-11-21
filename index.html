@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Rota Entregador</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#007AFF">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<style>
+:root{--blue:#007AFF;--green:#34C759;--red:#FF3B30;--orange:#FF9500;--bg:#f2f2f7;--card:#fff;--text:#1c1c1e;--sub:#6e6e73;--sep:rgba(60,60,67,.15);--fill:rgba(120,120,128,.12)}
+@media(prefers-color-scheme:dark){:root{--bg:#000;--card:#1c1c1e;--text:#fff;--sub:#a1a1a8;--sep:rgba(255,255,255,.14);--fill:rgba(120,120,128,.26);--blue:#0A84FF;--green:#30D158}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased;padding:env(safe-area-inset-top) 0 calc(env(safe-area-inset-bottom) + 110px)}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;padding:0}
+input,textarea{font:inherit;color:var(--text)}
+.wrap{max-width:560px;margin:0 auto;padding:12px 14px}
+h1{font-size:30px;font-weight:800;letter-spacing:-.02em;margin:14px 4px 2px}
+.lead{color:var(--sub);margin:0 4px 14px;font-size:15px;line-height:1.4}
+.card{background:var(--card);border-radius:16px;padding:14px;margin-bottom:14px}
+.lbl{font-size:13px;font-weight:600;color:var(--sub);text-transform:uppercase;letter-spacing:.02em;margin:2px 2px 6px}
+textarea,.inp{width:100%;border:0;border-radius:12px;background:var(--fill);padding:12px;font-size:16.5px;outline:none}
+textarea{min-height:130px;resize:vertical;line-height:1.4}
+.row2{display:flex;gap:8px;align-items:center;margin-top:10px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;height:50px;border-radius:13px;background:var(--fill);font-weight:600;font-size:16.5px;flex:1;text-decoration:none;color:var(--text)}
+.btn.primary{background:var(--blue);color:#fff}
+.btn.green{background:var(--green);color:#fff}
+.btn.sm{height:40px;font-size:14.5px;border-radius:11px}
+.btn:disabled{opacity:.45}
+.hint{color:var(--sub);font-size:13.5px;line-height:1.4;margin-top:8px}
+.start{display:flex;gap:10px;align-items:center;font-size:15px}
+.start .dot{width:14px;height:14px;border-radius:50%;background:var(--green);border:3px solid #fff;box-shadow:0 0 0 1.5px var(--green);flex:none}
+.list{background:var(--card);border-radius:16px;overflow:hidden}
+.stop{display:flex;gap:12px;padding:12px 12px 12px 14px;align-items:flex-start}
+.stop+.stop{border-top:1px solid var(--sep)}
+.n{width:30px;height:30px;border-radius:50%;background:var(--red);color:#fff;font-weight:700;display:grid;place-items:center;flex:none;font-size:15px;margin-top:2px}
+.stop.done .n{background:#8e8e93}
+.stop.done .addr{text-decoration:line-through;color:var(--sub)}
+.tx{flex:1;min-width:0}
+.addr{font-size:16.5px;font-weight:600;line-height:1.25;word-break:break-word}
+.meta{font-size:13.5px;color:var(--sub);margin-top:3px}
+.tag{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 7px;border-radius:8px;margin-right:6px;vertical-align:1px}
+.tag.ok{color:var(--green);background:rgba(52,199,89,.15)}
+.tag.rua{color:var(--orange);background:rgba(255,149,0,.15)}
+.tag.no{color:var(--red);background:rgba(255,59,48,.13)}
+.acts{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
+.chip{height:34px;padding:0 12px;border-radius:17px;background:var(--fill);font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:5px;text-decoration:none;color:var(--text)}
+.chip.go{background:var(--blue);color:#fff}
+.side{display:flex;flex-direction:column;gap:2px}
+.side button{width:32px;height:30px;border-radius:8px;display:grid;place-items:center;color:var(--sub);font-size:17px}
+.side button:active{background:var(--fill)}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--sep);padding:10px 14px calc(env(safe-area-inset-bottom) + 10px);z-index:5}
+.bar .in{max-width:560px;margin:0 auto}
+.blocks{display:flex;gap:8px;overflow-x:auto}
+.blocks .btn{flex:none;padding:0 16px}
+.prog{height:4px;border-radius:2px;background:var(--fill);overflow:hidden;margin-top:10px}
+.prog i{display:block;height:100%;background:var(--blue);width:0;transition:width .3s}
+.sec{display:flex;justify-content:space-between;align-items:center;margin:4px 4px 8px}
+.sec b{font-size:20px}
+.link{color:var(--blue);font-size:15px;font-weight:600}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:flex-end;justify-content:center;z-index:20}
+#modal .c{background:var(--card);width:100%;max-width:560px;border-radius:22px 22px 0 0;padding:18px 16px calc(env(safe-area-inset-bottom) + 18px)}
+#modal h2{margin:0 0 12px;font-size:20px}
+#toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 14px);transform:translateX(-50%);background:rgba(30,30,32,.94);color:#fff;padding:10px 16px;border-radius:20px;font-size:14.5px;opacity:0;pointer-events:none;transition:.25s;z-index:30;max-width:90vw;text-align:center}
+#toast.show{opacity:1}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Rota Entregador</h1>
+  <p class="lead">Cole os endereços, o app organiza do mais perto ao mais longe e o Google Maps leva até a porta.</p>
+
+  <div class="card">
+    <div class="lbl">Endereços (um por linha)</div>
+    <textarea id="addrs" placeholder="Rua Cuiabá, 120, Centro&#10;Av. Marechal Rondon, 1500&#10;Rua São Paulo, 45 - Maria (65) 99999-1234"></textarea>
+    <div class="lbl" style="margin-top:12px">Cidade</div>
+    <input class="inp" id="city" placeholder="Pontes e Lacerda - MT">
+    <div class="row2"><button class="btn primary" id="go">Organizar rota</button></div>
+    <div class="hint">Pode colar nome e telefone na mesma linha depois de um traço. Também aceita coordenadas ou link longo do Google Maps.</div>
+    <div class="prog" id="prog" hidden><i></i></div>
+  </div>
+
+  <div id="out" hidden>
+    <div class="sec"><b>Ordem das entregas</b><button class="link" id="clear">Limpar</button></div>
+    <div class="card start"><span class="dot"></span><span id="startTx">Partida: sua localização</span></div>
+    <div class="list" id="list"></div>
+    <div class="hint" style="margin:10px 4px">Com "rua achada", o Google leva até a rua certa, e o número você confere na chegada. Se a ordem parecer estranha, use as setas.</div>
+    <div class="row2"><button class="btn sm" id="reorder">Reorganizar a partir de onde estou</button></div>
+  </div>
+</div>
+
+<div class="bar" id="bar" hidden><div class="in">
+  <div class="blocks" id="blocks"></div>
+</div></div>
+
+<div id="modal" hidden><div class="c"></div></div>
+<div id="toast"></div>
+
+<script>
+(function(){
+'use strict';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const store={get(k,d){try{const v=localStorage.getItem('rotaent.'+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem('rotaent.'+k,JSON.stringify(v))}catch(e){}}};
+const PER_LINK=4; /* paradas por link do Google Maps (seguro no celular) */
+
+let stops=store.get('stops',[]), pos=null, busy=false;
+$('#city').value=store.get('city','');
+$('#addrs').value=store.get('draft','');
+$('#addrs').addEventListener('input',e=>store.set('draft',e.target.value));
+$('#city').addEventListener('input',e=>store.set('city',e.target.value));
+
+let tT;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('show'),3000)}
+
+/* ---------- localização ---------- */
+function getPos(){
+  return new Promise(res=>{
+    if(!navigator.geolocation)return res(null);
+    navigator.geolocation.getCurrentPosition(p=>{pos={lat:p.coords.latitude,lng:p.coords.longitude};res(pos)},()=>res(null),{enableHighAccuracy:true,timeout:15000,maximumAge:60000});
+  });
+}
+
+/* ---------- geometria ---------- */
+function dist(a,b){const R=6371000,r=x=>x*Math.PI/180;const dLa=r(b.lat-a.lat),dLo=r(b.lng-a.lng);const s=Math.sin(dLa/2)**2+Math.cos(r(a.lat))*Math.cos(r(b.lat))*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(s))}
+function fmt(m){return m<1000?Math.round(m/10)*10+' m':(m/1000).toFixed(1).replace('.',',')+' km'}
+function order(start,pts){
+  /* vizinho mais próximo: sempre vai para a entrega mais perto de onde está */
+  const left=pts.map((_,i)=>i),ord=[];let cur=start;
+  while(left.length){let bi=0,bd=1e18;left.forEach((k,j)=>{const d=dist(cur,pts[k]);if(d<bd){bd=d;bi=j}});const k=left.splice(bi,1)[0];ord.push(k);cur=pts[k]}
+  /* 2-opt: desfaz cruzamentos sem mudar o começo */
+  const len=o=>{let t=dist(start,pts[o[0]]);for(let i=1;i<o.length;i++)t+=dist(pts[o[i-1]],pts[o[i]]);return t};
+  let imp=true,g=0;
+  while(imp&&g++<50){imp=false;for(let i=0;i<ord.length-1;i++)for(let j=i+1;j<ord.length;j++){const c=ord.slice(0,i).concat(ord.slice(i,j+1).reverse(),ord.slice(j+1));if(len(c)+1<len(ord)){ord.splice(0,ord.length,...c);imp=true}}}
+  return ord;
+}
+
+/* ---------- leitura das linhas ---------- */
+function parseCoords(t){
+  const ok=(a,b)=>a>=-35&&a<=6&&b>=-75&&b<=-27;
+  const pats=[/@(-?\d+\.\d+),(-?\d+\.\d+)/,/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/,/[?&](?:q|ll|query|destination|daddr)=(-?\d+\.\d+)(?:,|%2C)\s*(-?\d+\.\d+)/i,/^\s*(-?\d{1,2}\.\d+)\s*,\s*(-?\d{1,3}\.\d+)\s*$/];
+  for(const p of pats){const m=t.match(p);if(m&&ok(+m[1],+m[2]))return{lat:+m[1],lng:+m[2]}}
+  return null;
+}
+function parseLine(line){
+  line=line.trim().replace(/\s+/g,' ');
+  const c=parseCoords(line);
+  if(c)return{addr:'Local ('+c.lat.toFixed(5)+', '+c.lng.toFixed(5)+')',coords:c,name:'',phone:''};
+  let phone='';
+  const pm=line.match(/(\(?\d{2}\)?\s?9?\d{4}[-\s]?\d{4})\s*$/);
+  if(pm){phone=pm[1];line=line.slice(0,pm.index).trim()}
+  let name='';
+  const nm=line.match(/\s[-–—|]\s([^,\d][^,]*)$/);
+  if(nm&&!/^(centro|bairro|jardim|vila|setor|jd)\b/i.test(nm[1].trim())){name=nm[1].trim();line=line.slice(0,nm.index).trim()}
+  line=line.replace(/[-–—,\s]+$/,'');
+  return{addr:line,name,phone};
+}
+function withCity(addr,city){
+  /* vírgula antes do número ajuda o Google: "Rua Cuiabá 120" -> "Rua Cuiabá, 120" */
+  let a=addr.replace(/^([^,\d]*[A-Za-zÀ-ÿ.])\s+(\d+[A-Za-z]?)\b/,'$1, $2');
+  if(city&&!a.toLowerCase().includes(city.split(/[-,]/)[0].trim().toLowerCase()))a+=', '+city;
+  return a+', Brasil';
+}
+const numOf=a=>(a.match(/,\s*(?:n[º°o.]?\s*)?(\d+[A-Za-z]?)\b/i)||a.match(/\b(\d{1,5}[A-Za-z]?)\b/)||[])[1]||'';
+
+/* ---------- busca do endereço (gratuita) ---------- */
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+async function getJSON(u){const ctl=new AbortController();const t=setTimeout(()=>ctl.abort(),12000);try{const r=await fetch(u,{signal:ctl.signal});if(!r.ok)throw 0;return await r.json()}finally{clearTimeout(t)}}
+let lastNom=0;
+async function nominatim(q){
+  const gap=Date.now()-lastNom;if(gap<1100)await wait(1100-gap);lastNom=Date.now();
+  let u='https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=1&countrycodes=br&accept-language=pt-BR&q='+encodeURIComponent(q);
+  if(pos)u+='&viewbox='+[pos.lng-.6,pos.lat+.6,pos.lng+.6,pos.lat-.6].join(',');
+  const j=await getJSON(u).catch(()=>[]);
+  if(!j||!j[0])return null;
+  const a=j[0].address||{};
+  return{lat:+j[0].lat,lng:+j[0].lon,prec:a.house_number?'casa':(a.road?'rua':'aprox'),road:a.road||'',hn:a.house_number||''};
+}
+async function photon(q){
+  let u='https://photon.komoot.io/api/?limit=1&bbox=-74.2,-33.9,-28.5,5.4&q='+encodeURIComponent(q);
+  if(pos)u+='&lat='+pos.lat+'&lon='+pos.lng;
+  const j=await getJSON(u).catch(()=>null);
+  const f=j&&j.features&&j.features.find(x=>(x.properties.countrycode||'').toUpperCase()==='BR');
+  if(!f)return null;
+  return{lat:f.geometry.coordinates[1],lng:f.geometry.coordinates[0],prec:f.properties.housenumber?'casa':(f.properties.street||f.properties.osm_key==='highway'?'rua':'aprox'),road:f.properties.street||(f.properties.osm_key==='highway'?f.properties.name:'')||''};
+}
+/* procura números cadastrados na mesma rua e usa o mais próximo (ou fica entre dois) */
+async function nearNumber(r,want){
+  const n=parseInt(want,10);if(!r.road||!n)return null;
+  const rx='^'+r.road.replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/"/g,'')+'$';
+  const q='[out:json][timeout:20];(node["addr:housenumber"]["addr:street"~"'+rx+'",i](around:2500,'+r.lat+','+r.lng+');way["addr:housenumber"]["addr:street"~"'+rx+'",i](around:2500,'+r.lat+','+r.lng+'););out center;';
+  const j=await getJSON('https://overpass-api.de/api/interpreter?data='+encodeURIComponent(q)).catch(()=>null);
+  const pts=((j&&j.elements)||[]).map(e=>({n:parseInt(e.tags['addr:housenumber'],10),lat:e.lat!=null?e.lat:e.center&&e.center.lat,lng:e.lon!=null?e.lon:e.center&&e.center.lon})).filter(p=>p.n&&p.lat!=null);
+  if(!pts.length)return null;
+  const lo=pts.filter(p=>p.n<=n).sort((a,b)=>b.n-a.n)[0],hi=pts.filter(p=>p.n>=n).sort((a,b)=>a.n-b.n)[0];
+  if(lo&&hi&&lo.n!==hi.n&&hi.n-lo.n<=600){const t=(n-lo.n)/(hi.n-lo.n);return{lat:lo.lat+(hi.lat-lo.lat)*t,lng:lo.lng+(hi.lng-lo.lng)*t,prec:'perto',near:'entre nº '+lo.n+' e '+hi.n}}
+  const best=pts.sort((a,b)=>Math.abs(a.n-n)-Math.abs(b.n-n))[0];
+  if(best.n===n)return{lat:best.lat,lng:best.lng,prec:'casa'};
+  return{lat:best.lat,lng:best.lng,prec:'perto',near:'perto do nº '+best.n};
+}
+async function locate(addr,city){
+  const r0=await locateStreet(addr,city);
+  const want=numOf(addr);
+  if(r0&&r0.prec!=='casa'&&want){const nn=await nearNumber(r0,want);if(nn)return nn}
+  return r0;
+}
+async function locateStreet(addr,city){
+  const full=withCity(addr,city).replace(/, Brasil$/,'');
+  let r=await nominatim(full);
+  if(r)return r;
+  const noNum=full.replace(/,?\s*(?:n[º°o.]?\s*)?\d+[A-Za-z]?\b/i,'');
+  if(noNum!==full){r=await nominatim(noNum);if(r){r.prec=r.prec==='casa'?'rua':r.prec;return r}}
+  r=await photon(full);
+  return r;
+}
+
+/* ---------- cidade automática ---------- */
+async function autoCity(){
+  if($('#city').value.trim()||!pos)return;
+  try{
+    const j=await getJSON('https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=10&addressdetails=1&accept-language=pt-BR&lat='+pos.lat+'&lon='+pos.lng);
+    const a=(j&&j.address)||{};const c=a.city||a.town||a.village||a.municipality;
+    const UF={'Mato Grosso':'MT','Mato Grosso do Sul':'MS','Rondônia':'RO','Goiás':'GO','São Paulo':'SP','Paraná':'PR','Minas Gerais':'MG','Bahia':'BA','Pará':'PA','Amazonas':'AM','Tocantins':'TO','Rio de Janeiro':'RJ','Santa Catarina':'SC','Rio Grande do Sul':'RS','Distrito Federal':'DF','Espírito Santo':'ES','Pernambuco':'PE','Ceará':'CE','Maranhão':'MA','Piauí':'PI','Paraíba':'PB','Rio Grande do Norte':'RN','Alagoas':'AL','Sergipe':'SE','Acre':'AC','Amapá':'AP','Roraima':'RR'};
+    if(c){$('#city').value=c+(a.state?' - '+(UF[a.state]||a.state):'');store.set('city',$('#city').value)}
+  }catch(e){}
+}
+
+/* ---------- organizar ---------- */
+async function organize(){
+  if(busy)return;
+  const lines=$('#addrs').value.split('\n').map(l=>l.trim()).filter(l=>l.length>3);
+  if(!lines.length&&!stops.length)return toast('Cole pelo menos um endereço');
+  if(!window.isSecureContext||!navigator.onLine){return toast('Abra pelo seu link (github.io) com internet. Dentro do app do Claude a busca é bloqueada.')}
+  busy=true;$('#go').disabled=true;$('#go').textContent='Procurando endereços…';
+  await getPos();await autoCity();
+  const city=$('#city').value.trim();
+  if(!city){busy=false;$('#go').disabled=false;$('#go').textContent='Organizar rota';$('#city').focus();return toast('Digite a cidade (ex.: Pontes e Lacerda - MT). Sem ela o Google não acha a rua.')}
+  const prog=$('#prog');prog.hidden=false;
+  const fresh=lines.map(parseLine);
+  for(let i=0;i<fresh.length;i++){
+    const s=fresh[i];
+    prog.firstElementChild.style.width=Math.round((i/fresh.length)*100)+'%';
+    if(s.coords){s.lat=s.coords.lat;s.lng=s.coords.lng;s.prec='casa';s.exact=true;delete s.coords}
+    else{const r=await locate(s.addr,city);if(r){s.lat=r.lat;s.lng=r.lng;s.prec=r.prec;s.near=r.near||''}else s.prec='no'}
+    s.query=s.exact?(s.lat.toFixed(6)+','+s.lng.toFixed(6)):withCity(s.addr,city);
+    s.done=false;s.num=numOf(s.addr);
+  }
+  prog.firstElementChild.style.width='100%';
+  stops=stops.filter(s=>!s.done).concat(fresh);
+  sortStops();
+  $('#addrs').value='';store.set('draft','');
+  busy=false;$('#go').disabled=false;$('#go').textContent='Organizar rota';
+  setTimeout(()=>{prog.hidden=true;prog.firstElementChild.style.width='0'},600);
+  const bad=fresh.filter(s=>s.prec==='no').length;
+  toast(bad?bad+' endereço(s) não achado(s): foram para o fim da lista':'Rota organizada');
+}
+function sortStops(){
+  const pend=stops.filter(s=>!s.done),done=stops.filter(s=>s.done);
+  const found=pend.filter(s=>s.lat!=null),miss=pend.filter(s=>s.lat==null);
+  const start=pos||(found[0]||null);
+  let ordered=found;
+  if(start&&found.length>1)ordered=order(start,found).map(k=>found[k]);
+  stops=ordered.concat(miss,done);
+  save();render();
+}
+function save(){store.set('stops',stops)}
+
+/* ---------- links ---------- */
+const dest=s=>s.lat!=null?s.lat.toFixed(6)+','+s.lng.toFixed(6):s.query;
+const gDir=list=>'https://www.google.com/maps/dir/?api=1&travelmode=driving&destination='+encodeURIComponent(dest(list[list.length-1]))+(list.length>1?'&waypoints='+list.slice(0,-1).map(s=>encodeURIComponent(dest(s))).join('%7C'):'');
+const gOne=s=>gDir([s]);
+const waze=s=>s.lat!=null?'https://waze.com/ul?ll='+s.lat+','+s.lng+'&navigate=yes':'https://waze.com/ul?q='+encodeURIComponent(s.query)+'&navigate=yes';
+const wa=p=>{let d=p.replace(/\D/g,'');if(d.length<=11)d='55'+d;return'https://wa.me/'+d+'?text='+encodeURIComponent('Olá! Sou o entregador, estou a caminho com o seu pedido.')};
+
+/* ---------- tela ---------- */
+function render(){
+  $('#out').hidden=!stops.length;$('#bar').hidden=!stops.some(s=>!s.done);
+  $('#startTx').textContent=pos?'Partida: sua localização':'Partida: primeira entrega (localização não liberada)';
+  let prev=pos,n=0;
+  $('#list').innerHTML=stops.map((s,i)=>{
+    if(!s.done)n++;
+    const d=prev&&s.lat!=null&&!s.done?fmt(dist(prev,s)):'';
+    if(s.lat!=null&&!s.done)prev=s;
+    const tag=s.prec==='casa'?'<span class="tag ok">no número</span>':s.prec==='perto'?'<span class="tag rua">'+esc(s.near||'nº próximo')+'</span>':s.prec==='rua'?'<span class="tag rua">rua achada</span>':s.prec==='no'?'<span class="tag no">não achado</span>':'<span class="tag rua">aproximado</span>';
+    return '<div class="stop'+(s.done?' done':'')+'"><div class="n">'+(s.done?'✓':n)+'</div><div class="tx">'+
+      '<div class="addr">'+esc(s.addr)+'</div>'+
+      '<div class="meta">'+tag+(s.name?esc(s.name)+' · ':'')+(s.phone?esc(s.phone)+' · ':'')+(d?d+(n===1&&pos?' de você':' da anterior'):'')+'</div>'+
+      (s.done?'<div class="acts"><button class="chip" data-a="undo" data-i="'+i+'">Desfazer</button></div>':
+      '<div class="acts"><a class="chip go" target="_blank" rel="noopener" href="'+gOne(s)+'">Ir (Google)</a><a class="chip" target="_blank" rel="noopener" href="'+waze(s)+'">Waze</a>'+
+      (s.phone?'<a class="chip" target="_blank" rel="noopener" href="'+wa(s.phone)+'">WhatsApp</a>':'')+
+      '<button class="chip" data-a="done" data-i="'+i+'">✓ Entregue</button><button class="chip" data-a="edit" data-i="'+i+'">Editar</button></div>')+
+      '</div>'+(s.done?'':'<div class="side"><button data-a="up" data-i="'+i+'" aria-label="Subir">↑</button><button data-a="down" data-i="'+i+'" aria-label="Descer">↓</button><button data-a="del" data-i="'+i+'" aria-label="Apagar">✕</button></div>')+'</div>';
+  }).join('');
+  /* blocos de rota para o Google Maps */
+  const pend=stops.filter(s=>!s.done),bl=[];
+  for(let i=0;i<pend.length;i+=PER_LINK)bl.push({a:i+1,b:Math.min(pend.length,i+PER_LINK),list:pend.slice(i,i+PER_LINK)});
+  $('#blocks').innerHTML=bl.map((b,k)=>'<a class="btn '+(k===0?'green':'')+'" target="_blank" rel="noopener" href="'+gDir(b.list)+'">'+(bl.length===1?'Navegar no Google Maps ('+pend.length+(pend.length>1?' entregas)':' entrega)'):'Entregas '+b.a+(b.b>b.a?' a '+b.b:''))+'</a>').join('');
+}
+$('#list').addEventListener('click',e=>{
+  const b=e.target.closest('[data-a]');if(!b)return;
+  const i=+b.dataset.i,a=b.dataset.a;
+  if(a==='up'&&i>0&&!stops[i-1].done){[stops[i-1],stops[i]]=[stops[i],stops[i-1]]}
+  if(a==='down'&&i<stops.length-1&&!stops[i+1].done){[stops[i+1],stops[i]]=[stops[i],stops[i+1]]}
+  if(a==='del')stops.splice(i,1);
+  if(a==='done'){const s=stops.splice(i,1)[0];s.done=true;stops.push(s);toast('Entrega concluída')}
+  if(a==='undo'){const s=stops.splice(i,1)[0];s.done=false;stops.unshift(s)}
+  if(a==='edit')return edit(i);
+  save();render();
+});
+function edit(i){
+  const s=stops[i],m=$('#modal'),c=m.firstElementChild;
+  c.innerHTML='<h2>Editar entrega</h2><div class="lbl">Endereço</div><input class="inp" id="eA" value="'+esc(s.addr)+'"><div class="lbl" style="margin-top:10px">Cliente</div><input class="inp" id="eN" value="'+esc(s.name)+'"><div class="lbl" style="margin-top:10px">Telefone</div><input class="inp" id="eP" inputmode="tel" value="'+esc(s.phone)+'"><div class="row2"><button class="btn" id="eX">Cancelar</button><button class="btn primary" id="eOk">Salvar</button></div>';
+  m.hidden=false;
+  $('#eX').onclick=()=>{m.hidden=true};
+  $('#eOk').onclick=async()=>{
+    const na=$('#eA').value.trim();s.name=$('#eN').value.trim();s.phone=$('#eP').value.trim();m.hidden=true;
+    if(na&&na!==s.addr){
+      s.addr=na;s.exact=false;const city=$('#city').value.trim();
+      s.query=withCity(na,city);
+      toast('Procurando o novo endereço…');const r=await locate(na,city);
+      if(r){s.lat=r.lat;s.lng=r.lng;s.prec=r.prec;s.near=r.near||''}else{s.lat=null;s.lng=null;s.prec='no'}
+      sortStops();return;
+    }
+    save();render();
+  };
+}
+$('#modal').addEventListener('click',e=>{if(e.target.id==='modal')e.currentTarget.hidden=true});
+$('#go').onclick=organize;
+$('#reorder').onclick=async()=>{toast('Pegando sua localização…');await getPos();sortStops();toast(pos?'Reorganizado a partir de onde você está':'Libere a localização para reorganizar daqui')};
+$('#clear').onclick=()=>{const m=$('#modal'),c=m.firstElementChild;c.innerHTML='<h2>Apagar todas as entregas?</h2><div class="row2"><button class="btn" id="cN">Não</button><button class="btn" style="background:var(--red);color:#fff" id="cY">Apagar</button></div>';m.hidden=false;$('#cN').onclick=()=>m.hidden=true;$('#cY').onclick=()=>{stops=[];save();render();m.hidden=true}};
+if(!window.isSecureContext)toast('Abra por um link https para liberar a localização');
+render();
+getPos().then(async()=>{await autoCity();render()});
+})();
+</script>
+</body>
+</html>
